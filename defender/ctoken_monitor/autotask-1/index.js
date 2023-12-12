@@ -1,6 +1,8 @@
 const stackName = 'ctoken_monitor';
 const comptrollerAddressSecretName = `${stackName}_comptrollerAddress`;
-const discordSecretName = `${stackName}_discordWebhook`;
+const pushoverWebhookSecretName = `${stackName}_pushoverWebhook`;
+const pushoverTokenSecretName = `${stackName}_pushoverToken`;
+const pushoverUserSecretName = `${stackName}_pushoverUser`;
 
 /* eslint-disable import/no-extraneous-dependencies,import/no-unresolved */
 const axios = require('axios');
@@ -225,7 +227,7 @@ function formatAmountString(amount, decimals, usdPerTokenBN, usdPerTokenDecimals
   };
 }
 
-function createDiscordMessage(
+function createPushoverMessage(
   eventName,
   params,
   decimals,
@@ -264,12 +266,17 @@ function createDiscordMessage(
   return undefined;
 }
 
-async function postToDiscord(url, message) {
+async function postToPushover(url, token, user, explorerLink, message) {
   const method = 'post';
   const headers = {
     'Content-Type': 'application/json',
   };
-  const data = { content: message };
+
+  const urlTitle = 'View transaction';
+
+  const data = {
+    token, user, message, url: explorerLink, url_title: urlTitle,
+  };
 
   const response = await axios({
     url,
@@ -341,10 +348,20 @@ exports.handler = async function (autotaskEvent) {
     throw new Error('secrets undefined');
   }
 
-  // ensure that there is a DiscordUrl secret
-  const discordUrl = secrets[discordSecretName];
-  if (discordUrl === undefined) {
-    throw new Error('discordUrl undefined');
+  // ensure that there is a PushoverUrl secret
+  const pushoverUrl = secrets[pushoverWebhookSecretName];
+  if (pushoverUrl === undefined) {
+    throw new Error('pushoverUrl undefined');
+  }
+
+  const pushoverToken = secrets[pushoverTokenSecretName];
+  if (pushoverToken === undefined) {
+    throw new Error('pushoverToken undefined');
+  }
+
+  const pushoverUser = secrets[pushoverUserSecretName];
+  if (pushoverUser === undefined) {
+    throw new Error('pushoverUser undefined');
   }
 
   // ensure that there is a comptrollerAddress secret
@@ -394,7 +411,7 @@ exports.handler = async function (autotaskEvent) {
     provider,
   );
 
-  // create messages for Discord
+  // create messages for Pushover
   const promises = matchReasons.map(async (reason) => {
     // if there are multiple events in the transaction
     // from multiple addresses, we won't know which event was emitted
@@ -434,8 +451,8 @@ exports.handler = async function (autotaskEvent) {
       } = await getTokenPrice(oldOracleContract, cTokenAddress, decimals));
     }
 
-    // craft the Discord message
-    return createDiscordMessage(
+    // craft the Pushover message
+    return createPushoverMessage(
       eventName,
       params,
       decimals,
@@ -448,18 +465,16 @@ exports.handler = async function (autotaskEvent) {
   // wait for the promises to settle
   const messages = await Promise.all(promises);
 
-  // construct the Etherscan transaction link
-  const etherscanLink = `[TX](<https://etherscan.io/tx/${transactionHash}>)`;
+  // construct the explorer transaction link
+  const explorerLink = `${explorerUrl}${transactionHash}`;
 
   // aggregate all of the messages into larger messages
   // but don't exceed 2000 characters per combined message
   const combinedMessages = [];
   let combinedMessage = '';
   messages.forEach((message, messageIndex) => {
-    const nextMessage = `${etherscanLink} ${message}`;
+    const nextMessage = message;
 
-    // Discord character limit is 2000
-    // ref: https://discord.com/developers/docs/resources/webhook#execute-webhook
     // the extra '1' in this if statement is for the additional line break that will be added
     // to all lines except the last one
     if (combinedMessage.length + nextMessage.length + 1 > 2000) {
@@ -481,7 +496,9 @@ exports.handler = async function (autotaskEvent) {
   });
 
   console.log(combinedMessages);
-  await Promise.all(combinedMessages.map((message) => postToDiscord(discordUrl, message)));
+  await Promise.all(combinedMessages.map(
+    (message) => postToPushover(pushoverUrl, pushoverToken, pushoverUser, explorerLink, message),
+  ));
 
   return {};
 };

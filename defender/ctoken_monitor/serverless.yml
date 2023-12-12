@@ -44,7 +44,9 @@ custom:
     # Public Variables
     comptrollerAddress: "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B"
     # Private variables pulled from external secrets.yml file
-    discordWebhook: ${self:custom.stackSecrets.discordWebhook}
+    pushoverWebhook: ${self:custom.stackSecrets.pushoverWebhook}
+    pushoverToken: ${self:custom.stackSecrets.pushoverToken}
+    pushoverUser: ${self:custom.stackSecrets.pushoverUser}
 
 defender:
   key: ${self:custom.config.keys.api}
