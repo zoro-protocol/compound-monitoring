@@ -1,5 +1,6 @@
-const stackName = 'ctoken_monitor';
+const stackName = 'testnet_ctoken_monitor';
 const comptrollerAddressSecretName = `${stackName}_comptrollerAddress`;
+const explorerUrlSecretName = `${stackName}_explorerUrl`;
 const pushoverWebhookSecretName = `${stackName}_pushoverWebhook`;
 const pushoverTokenSecretName = `${stackName}_pushoverToken`;
 const pushoverUserSecretName = `${stackName}_pushoverUser`;
@@ -156,7 +157,7 @@ function emojiForEvent(eventName, usdValueString) {
 async function getTokenInfo(cTokenAddress, provider) {
   let underlyingTokenAddress;
   if (cTokenAddress.toLowerCase() === cEtherAddress) {
-    underlyingTokenAddress = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+    underlyingTokenAddress = '0xb7cdeF6521EB451D67fB72fd42460f57EdD11101';
   } else {
     const cTokenContract = new ethers.Contract(
       cTokenAddress,
@@ -368,6 +369,11 @@ exports.handler = async function (autotaskEvent) {
   comptrollerAddress = secrets[comptrollerAddressSecretName];
   if (comptrollerAddress === undefined) {
     throw new Error('comptrollerAddress undefined');
+  }
+
+  const explorerUrl = secrets[explorerUrlSecretName];
+  if (explorerUrl === undefined) {
+    throw new Error('explorerUrl undefined');
   }
 
   // ensure that the request key exists within the autotaskEvent Object
