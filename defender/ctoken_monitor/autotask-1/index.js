@@ -134,8 +134,8 @@ async function getTokenPrice(oracleContract, cTokenAddress, decimals) {
 
 function emojiForEvent(eventName, usdValueString) {
   // create the appropriate number of whale emoji for the value
-  // add one whale for each power of 1000
-  const numWhales = Math.floor((usdValueString.length - 1) / 3);
+  // add one whale for each power of 100 over 10,000
+  const numWhales = Math.floor((usdValueString.length - 3) / 2);
   const whaleString = '🐳'.repeat(numWhales);
 
   switch (eventName) {
@@ -248,7 +248,7 @@ function createPushoverMessage(
 
     const byAddress = params[eventObject.byKey];
     const { action } = eventObject;
-    let message = `${eventEmoji} **${amountString} ${symbol}** ${action}`;
+    let message = `${eventEmoji} ${amountString} ${symbol} ${action}`;
 
     if (action === 'liquidate') {
       const fromAddress = params[eventObject.fromKey];
