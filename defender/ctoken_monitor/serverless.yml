@@ -4,31 +4,19 @@ frameworkVersion: "3"
 
 provider:
   name: defender
-  stage: dev
-  stackName: testnet_ctoken_monitor
+  stage: ${opt:stage, "testnet"}
+  stackName: ctoken
   ssot: false
 
 custom:
   config: ${file(../secrets.yml)}
   stackSecrets: ${self:custom.config.secrets.${self:provider.stackName}}
 
-  # Configure this section and rename secret-example.yml to secrets.yml
-  name: Testnet CToken Monitor
+  # Network specific config
+  network: ${file(${self:provider.stage}.yml)}
 
-  # Contract Sentinel Settings
-  monitored-addresses:
-    - "0xb7cdeF6521EB451D67fB72fd42460f57EdD11101" # Zoro ETH Token (zETH)
-    - "0xF118A201DC30372DAC77d449237E64D56Dcb08a6" # Zoro WBTC Token (zWBTC)
-    - "0xbcbb6F0a82264db622a84888fB77c766C7Ef0459" # Zoro USDT Token (zUSDT)
-    - "0x526F502afd5cd880bF1AF694e3a7771637BC9b06" # Zoro USDC Token (zUSDC)
-  # Possible Defender networks: https://github.com/OpenZeppelin/defender-client/blob/master/packages/base/src/utils/network.ts
-  monitored-network: zksync-goerli
-
-  # Comment out any secret that you do not want to be overwritten in Defender
   defenderSecrets:
     # Public Variables
-    comptrollerAddress: "0xF07158ACD62de2cC6F83367d9b81E6DB6905ea1B"
-    explorerUrl: "https://goerli.explorer.zksync.io/tx/"
     # Private variables pulled from external secrets.yml file
     pushoverWebhook: ${self:custom.stackSecrets.pushoverWebhook}
     pushoverToken: ${self:custom.stackSecrets.pushoverToken}
@@ -38,55 +26,92 @@ defender:
   key: ${self:custom.config.keys.api}
   secret: ${self:custom.config.keys.secret}
 
-functions:
-  autotask-1:
-    name: ${self:custom.name} Serverless Autotask
-    path: autotask-1
-    trigger:
-      type: schedule
-      frequency: 525600000
-    paused: false
-    relayer: ${self:resources.Resources.relayers.relayer-1}
-
 resources:
-  Resources:
-    policies:
-      policy-1:
-        gas-price-cap: 1000
-        whitelist-receivers:
-          - "0x0f06aB75c7DD497981b75CD82F6566e3a5CAd8f2"
-        eip1559-pricing: true
+  actions:
+    action-1:
+      name: ${self:custom.network.core.name} Action
+      path: autotask-1
+      trigger:
+        type: schedule
+        frequency: 525600000
+      paused: false
+      relayer: ${self:resources.relayers.relayer-1}
+      environment-variables:
+        comptrollerAddress: ${self:custom.network.core.comptrollerAddress}
+        cEtherAddress: ${self:custom.network.core.cEtherAddress}
+        explorerUrl: ${self:custom.network.explorerUrl}
 
-    secrets:
-      stack: ${self:custom.defenderSecrets}
+    action-2:
+      name: ${self:custom.network.degen.name} Action
+      path: autotask-1
+      trigger:
+        type: schedule
+        frequency: 525600000
+      paused: false
+      relayer: ${self:resources.relayers.relayer-1}
+      environment-variables:
+        comptrollerAddress: ${self:custom.network.degen.comptrollerAddress}
+        cEtherAddress: ${self:custom.network.degen.cEtherAddress}
+        explorerUrl: ${self:custom.network.explorerUrl}
 
-    relayers:
-      relayer-1:
-        name: ${self:custom.name} Serverless Relay
-        network: ${self:custom.monitored-network}
-        min-balance: 100000000000000000
+  policies:
+    policy-1:
+      gas-price-cap: 1000
+      whitelist-receivers:
+        - "0x0f06aB75c7DD497981b75CD82F6566e3a5CAd8f2"
+      eip1559-pricing: true
 
-    sentinels:
-      sentinel-1:
-        name: ${self:custom.name} Serverless Sentinel
-        type: BLOCK
-        addresses: ${self:custom.monitored-addresses}
-        network: ${self:custom.monitored-network}
-        abi: ${file(abis/sentinel-1.json.abi)}
-        paused: false
-        autotask-trigger: ${self:functions.autotask-1}
-        confirm-level: 1
-        notify-config:
-          timeout: 0
-          channels: []
-        conditions:
-          event:
-            - signature: Borrow(address,uint256,uint256,uint256)
-            - signature: LiquidateBorrow(address,address,uint256,address,uint256)
-            - signature: Mint(address,uint256,uint256)
-            - signature: Redeem(address,uint256,uint256)
-            - signature: RepayBorrow(address,address,uint256,uint256,uint256)
-          function: []
+  secrets:
+    stack: ${self:custom.defenderSecrets}
+
+  relayers:
+    relayer-1:
+      name: ${self:custom.network.name} Relay
+      network: ${self:custom.network.monitored-network}
+      min-balance: 100000000000000000
+
+  monitors:
+    monitor-1:
+      name: ${self:custom.network.core.name} Monitor
+      type: BLOCK
+      addresses: ${self:custom.network.core.monitored-addresses}
+      network: ${self:custom.network.monitored-network}
+      abi: ${file(abis/sentinel-1.json.abi)}
+      paused: false
+      action-trigger: ${self:resources.actions.action-1}
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        channels: []
+      conditions:
+        event:
+          - signature: Borrow(address,uint256,uint256,uint256)
+          - signature: LiquidateBorrow(address,address,uint256,address,uint256)
+          - signature: Mint(address,uint256,uint256)
+          - signature: Redeem(address,uint256,uint256)
+          - signature: RepayBorrow(address,address,uint256,uint256,uint256)
+        function: []
+
+    monitor-2:
+      name: ${self:custom.network.degen.name} Monitor
+      type: BLOCK
+      addresses: ${self:custom.network.degen.monitored-addresses}
+      network: ${self:custom.network.monitored-network}
+      abi: ${file(abis/sentinel-1.json.abi)}
+      paused: false
+      action-trigger: ${self:resources.actions.action-2}
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        channels: []
+      conditions:
+        event:
+          - signature: Borrow(address,uint256,uint256,uint256)
+          - signature: LiquidateBorrow(address,address,uint256,address,uint256)
+          - signature: Mint(address,uint256,uint256)
+          - signature: Redeem(address,uint256,uint256)
+          - signature: RepayBorrow(address,address,uint256,uint256,uint256)
+        function: []
 
 plugins:
-  - defender-serverless
+  - "@openzeppelin/defender-as-code"
