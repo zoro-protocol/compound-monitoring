@@ -1,6 +1,4 @@
 const stackName = 'testnet_ctoken_monitor';
-const comptrollerAddressSecretName = `${stackName}_comptrollerAddress`;
-const explorerUrlSecretName = `${stackName}_explorerUrl`;
 const pushoverWebhookSecretName = `${stackName}_pushoverWebhook`;
 const pushoverTokenSecretName = `${stackName}_pushoverToken`;
 const pushoverUserSecretName = `${stackName}_pushoverUser`;
@@ -54,7 +52,7 @@ const CTOKEN_ABI = ['function underlying() view returns (address)'];
 const makerTokenAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'.toLowerCase();
 const saiTokenAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'.toLowerCase();
 const oddTokens = [makerTokenAddress, saiTokenAddress];
-const cEtherAddress = '0xb7cdeF6521EB451D67fB72fd42460f57EdD11101'.toLowerCase();
+const cEtherAddress = process.env.cEtherAddress.toLowerCase();
 
 // Define the address in the handler section
 let comptrollerAddress;
@@ -197,12 +195,12 @@ exports.handler = async function (autotaskEvent) {
   }
 
   // ensure that there is a comptrollerAddress secret
-  comptrollerAddress = secrets[comptrollerAddressSecretName];
+  ({ comptrollerAddress } = process.env);
   if (comptrollerAddress === undefined) {
     throw new Error('comptrollerAddress undefined');
   }
 
-  const explorerUrl = secrets[explorerUrlSecretName];
+  const { explorerUrl } = process.env;
   if (explorerUrl === undefined) {
     throw new Error('explorerUrl undefined');
   }
