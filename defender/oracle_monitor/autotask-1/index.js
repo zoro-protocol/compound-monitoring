@@ -225,7 +225,14 @@ exports.handler = async function (autotaskEvent) {
     const symbol = await getTokenSymbol(cTokenAddress, provider);
 
     // get the conversion rate for this token to USD
-    const scaledPrice = await getScaledTokenPrice(oracleContract, cTokenAddress);
+    let scaledPrice;
+
+    try {
+      scaledPrice = await getScaledTokenPrice(oracleContract, cTokenAddress);
+    } catch (e) {
+      // create pushever message if the oracle reverts
+      return createPushoverMessageForOracleFailure(symbol, cTokenAddress);
+    }
 
     // create pushever message if the underlying price is zero
     if (scaledPrice.isZero()) {
