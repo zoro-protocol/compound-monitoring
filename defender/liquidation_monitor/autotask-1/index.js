@@ -39,6 +39,8 @@ axiosRetry(axios, {
 const { DefenderRelayProvider } = require('defender-relay-client/lib/ethers');
 /* eslint-enable import/no-extraneous-dependencies,import/no-unresolved */
 
+const { KeyValueStoreClient } = require('@openzeppelin/defender-kvstore-client');
+
 let comptrollerAddress;
 let graphUrl;
 let multicallAddress;
@@ -159,6 +161,8 @@ exports.handler = async function (autotaskEvent) {
     throw new Error('autotaskEvent undefined');
   }
 
+  const store = new KeyValueStoreClient(autotaskEvent);
+
   const { secrets } = autotaskEvent;
   if (secrets === undefined) {
     throw new Error('secrets undefined');
@@ -211,13 +215,19 @@ exports.handler = async function (autotaskEvent) {
   const multicallContract = getMulticallContract(provider);
   const comptrollerContract = getComptroller(provider);
 
-  // TODO: alert only on a new shortfall so duplicate alerts are not constantly pushed
   const shortfalls = await getAccountShortfalls(multicallContract, comptrollerContract, accounts);
 
   // create messages for Pushover
   const promises = shortfalls.map(async ({ shortfall, account }) => {
-    // create pushever message if the account is in shortfall
-    if (shortfall.gt(0)) {
+    const key = `${stackName}_${account}`;
+
+    const flaggedForLiquidation = (await store.get(key)) === "true";
+
+    if (shortfall.isZero() && flaggedForLiquidation) {
+      await store.del(key);
+    } else if (shortfall.gt(0) && !flaggedForLiquidation) {
+      // create pushever message if the account is in shortfall
+      await store.put(key, "true");
       return createPushoverMessage(account, shortfall);
     }
   });
