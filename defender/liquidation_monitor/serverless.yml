@@ -1,0 +1,122 @@
+service: generated-service
+configValidationMode: error
+frameworkVersion: "3"
+
+provider:
+  name: defender
+  stage: ${opt:stage, "testnet"}
+  stackName: liquidation
+  ssot: false
+
+custom:
+  name: Liquidation
+  config: ${file(../secrets.yml)}
+  stackSecrets: ${self:custom.config.secrets.${self:provider.stackName}}
+
+  # Network specific config
+  network: ${file(../${self:provider.stage}.yml)}
+
+  defenderSecrets:
+    # Public Variables
+    # Private variables pulled from external secrets.yml file
+    pushoverWebhook: ${self:custom.stackSecrets.pushoverWebhook}
+    pushoverToken: ${self:custom.stackSecrets.pushoverToken}
+    pushoverUser: ${self:custom.stackSecrets.pushoverUser}
+
+defender:
+  key: ${self:custom.config.keys.api}
+  secret: ${self:custom.config.keys.secret}
+
+resources:
+  actions:
+    action-1:
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Action
+      path: autotask-1
+      trigger:
+        type: schedule
+        frequency: 360
+      paused: false
+      relayer: ${self:resources.relayers.relayer-1}
+      environment-variables:
+        multicallAddress: ${self:custom.network.multicallAddress}
+        comptrollerAddress: ${self:custom.network.core.comptrollerAddress}
+        cEtherAddress: ${self:custom.network.core.cEtherAddress}
+        graphUrl: ${self:custom.network.core.graphUrl}
+        explorerUrl: ${self:custom.network.explorerUrl}
+
+    action-2:
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Action
+      path: autotask-1
+      trigger:
+        type: schedule
+        frequency: 360
+      paused: false
+      relayer: ${self:resources.relayers.relayer-1}
+      environment-variables:
+        multicallAddress: ${self:custom.network.multicallAddress}
+        comptrollerAddress: ${self:custom.network.degen.comptrollerAddress}
+        cEtherAddress: ${self:custom.network.degen.cEtherAddress}
+        graphUrl: ${self:custom.network.core.graphUrl}
+        explorerUrl: ${self:custom.network.explorerUrl}
+
+  policies:
+    policy-1:
+      gas-price-cap: 1000
+      whitelist-receivers:
+        - "0x0f06aB75c7DD497981b75CD82F6566e3a5CAd8f2"
+      eip1559-pricing: true
+
+  secrets:
+    stack: ${self:custom.defenderSecrets}
+
+  relayers:
+    relayer-1:
+      name: ${self:custom.network.name} Relay
+      network: ${self:custom.network.monitored-network}
+      min-balance: 100000000000000000
+
+  monitors:
+    monitor-1:
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Monitor
+      type: BLOCK
+      addresses: ${self:custom.network.core.zTokens}
+      network: ${self:custom.network.monitored-network}
+      abi: ${file(abis/sentinel-1.json.abi)}
+      paused: false
+      action-trigger: ${self:resources.actions.action-1}
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        channels: []
+      conditions:
+        event:
+          - signature: Borrow(address,uint256,uint256,uint256)
+          - signature: LiquidateBorrow(address,address,uint256,address,uint256)
+          - signature: Mint(address,uint256,uint256)
+          - signature: Redeem(address,uint256,uint256)
+          - signature: RepayBorrow(address,address,uint256,uint256,uint256)
+        function: []
+
+    monitor-2:
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Monitor
+      type: BLOCK
+      addresses: ${self:custom.network.degen.zTokens}
+      network: ${self:custom.network.monitored-network}
+      abi: ${file(abis/sentinel-1.json.abi)}
+      paused: false
+      action-trigger: ${self:resources.actions.action-2}
+      confirm-level: 1
+      notify-config:
+        timeout: 0
+        channels: []
+      conditions:
+        event:
+          - signature: Borrow(address,uint256,uint256,uint256)
+          - signature: LiquidateBorrow(address,address,uint256,address,uint256)
+          - signature: Mint(address,uint256,uint256)
+          - signature: Redeem(address,uint256,uint256)
+          - signature: RepayBorrow(address,address,uint256,uint256,uint256)
+        function: []
+
+plugins:
+  - "@openzeppelin/defender-as-code"
