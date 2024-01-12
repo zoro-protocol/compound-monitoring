@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openzeppelin/defender-as-code": "^2.5.0",
     "axios": "0.21.2",
     "axios-retry": "3.1.9",
     "defender-autotask-client": "1.38.0-rc.2",
