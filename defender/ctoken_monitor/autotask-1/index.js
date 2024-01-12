@@ -54,7 +54,8 @@ const CTOKEN_ABI = ['function underlying() view returns (address)'];
 const makerTokenAddress = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2'.toLowerCase();
 const saiTokenAddress = '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359'.toLowerCase();
 const oddTokens = [makerTokenAddress, saiTokenAddress];
-const cEtherAddress = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5'.toLowerCase();
+const cEtherAddress = '0xb7cdeF6521EB451D67fB72fd42460f57EdD11101'.toLowerCase();
+const etherUnderylingAddress = '0x000000000000000000000000000000000000800A'.toLowerCase();
 
 // Temporary to account for Proposal 117
 const oldOracleAddress = '0x65c816077C29b557BEE980ae3cC2dCE80204A0C5';
@@ -157,7 +158,7 @@ function emojiForEvent(eventName, usdValueString) {
 async function getTokenInfo(cTokenAddress, provider) {
   let underlyingTokenAddress;
   if (cTokenAddress.toLowerCase() === cEtherAddress) {
-    underlyingTokenAddress = '0xb7cdeF6521EB451D67fB72fd42460f57EdD11101';
+    underlyingTokenAddress = etherUnderylingAddress;
   } else {
     const cTokenContract = new ethers.Contract(
       cTokenAddress,
