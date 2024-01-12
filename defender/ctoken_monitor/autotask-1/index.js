@@ -134,7 +134,7 @@ async function getTokenPrice(oracleContract, cTokenAddress, decimals) {
 function emojiForEvent(eventName, usdValueString) {
   // create the appropriate number of whale emoji for the value
   // add one whale for each power of 100 over 10,000
-  const numWhales = Math.floor((usdValueString.length - 3) / 2);
+  const numWhales = Math.max(0, Math.floor((usdValueString.length - 3) / 2));
   const whaleString = '🐳'.repeat(numWhales);
 
   switch (eventName) {
