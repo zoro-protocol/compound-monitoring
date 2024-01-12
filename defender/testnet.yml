@@ -1,0 +1,29 @@
+name: Testnet
+
+# Possible Defender networks: https://github.com/OpenZeppelin/defender-client/blob/master/packages/base/src/utils/network.ts
+monitored-network: zksync-goerli
+
+explorerUrl: "https://goerli.explorer.zksync.io/tx/"
+
+multicallAddress: "0x8214aC4216b1253106bAcFC2Bbbf23E5756645C8"
+
+core:
+  name: Core
+  comptrollerAddress: "0xF07158ACD62de2cC6F83367d9b81E6DB6905ea1B"
+  cEtherAddress: "0xb7cdeF6521EB451D67fB72fd42460f57EdD11101"
+  zTokens:
+    - ${self:custom.network.core.cEtherAddress} # Zoro ETH Token (zETH)
+    - "0xF118A201DC30372DAC77d449237E64D56Dcb08a6" # Zoro WBTC Token (zWBTC)
+    - "0xbcbb6F0a82264db622a84888fB77c766C7Ef0459" # Zoro USDT Token (zUSDT)
+    - "0x526F502afd5cd880bF1AF694e3a7771637BC9b06" # Zoro USDC Token (zUSDC)
+  graphUrl: "https://api.thegraph.com/subgraphs/name/0xr0r0n0a/zoro-testnet-5"
+
+degen:
+  name: Degen
+  comptrollerAddress: "0x227C2D6e02a93d885F3D200E9b3b56834E859371"
+  cEtherAddress: "0xA408afd76eE8315F59004F227E4d0fB65a5330b7"
+  zTokens:
+    - ${self:custom.network.degen.cEtherAddress} # Zoro ETH Token (zETH)
+    - "0xFA2E3E60Ab9a2A2462D5609baa7ECdF8A6cbe16C" # Zoro USDC Token (zUSDC)
+    - "0x8e1b1CD5f0FA48819dbf6AfF6b499462608834Fa" # Zoro MUTE Token (MUTE)
+  graphUrl: ""
