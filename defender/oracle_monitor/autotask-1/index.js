@@ -1,4 +1,4 @@
-const stackName = 'testnet_ctoken_monitor';
+const stackName = 'oracle';
 const pushoverWebhookSecretName = `${stackName}_pushoverWebhook`;
 const pushoverTokenSecretName = `${stackName}_pushoverToken`;
 const pushoverUserSecretName = `${stackName}_pushoverUser`;
