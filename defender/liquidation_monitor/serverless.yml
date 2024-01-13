@@ -45,7 +45,7 @@ resources:
         explorerUrl: ${self:custom.network.explorerUrl}
 
     action-2:
-      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Action
+      name: ${self:custom.network.name} ${self:custom.network.degen.name} ${self:custom.name} Action
       path: autotask-1
       trigger:
         type: schedule
@@ -98,7 +98,7 @@ resources:
         function: []
 
     monitor-2:
-      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Monitor
+      name: ${self:custom.network.name} ${self:custom.network.degen.name} ${self:custom.name} Monitor
       type: BLOCK
       addresses: ${self:custom.network.degen.zTokens}
       network: ${self:custom.network.monitored-network}
