@@ -56,7 +56,7 @@ resources:
         multicallAddress: ${self:custom.network.multicallAddress}
         comptrollerAddress: ${self:custom.network.degen.comptrollerAddress}
         cEtherAddress: ${self:custom.network.degen.cEtherAddress}
-        graphUrl: ${self:custom.network.core.graphUrl}
+        graphUrl: ${self:custom.network.degen.graphUrl}
         explorerUrl: ${self:custom.network.explorerUrl}
 
   policies:
