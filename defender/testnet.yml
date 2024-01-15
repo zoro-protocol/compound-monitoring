@@ -13,9 +13,9 @@ core:
   cEtherAddress: "0xb7cdeF6521EB451D67fB72fd42460f57EdD11101"
   zTokens:
     - ${self:custom.network.core.cEtherAddress} # Zoro ETH Token (zETH)
-    - "0xF118A201DC30372DAC77d449237E64D56Dcb08a6" # Zoro WBTC Token (zWBTC)
-    - "0xbcbb6F0a82264db622a84888fB77c766C7Ef0459" # Zoro USDT Token (zUSDT)
     - "0x526F502afd5cd880bF1AF694e3a7771637BC9b06" # Zoro USDC Token (zUSDC)
+    - "0x008Cfb27E9939Ea15baF80EE57c5216b8826Bf18" # Zoro USDT Token (zUSDT)
+    - "0xF118A201DC30372DAC77d449237E64D56Dcb08a6" # Zoro WBTC Token (zWBTC)
   graphUrl: "https://api.thegraph.com/subgraphs/name/zoro-protocol/testnet-core"
 
 degen:
@@ -24,6 +24,8 @@ degen:
   cEtherAddress: "0xA408afd76eE8315F59004F227E4d0fB65a5330b7"
   zTokens:
     - ${self:custom.network.degen.cEtherAddress} # Zoro ETH Token (zETH)
+    - "0x6402e8055e916A0dd5740bC3641CcD22FFB37Ba7" # Zoro LINK Token (zLINK)
     - "0xFA2E3E60Ab9a2A2462D5609baa7ECdF8A6cbe16C" # Zoro USDC Token (zUSDC)
-    - "0x8e1b1CD5f0FA48819dbf6AfF6b499462608834Fa" # Zoro MUTE Token (MUTE)
+    - "0x6526964B3690Dbba2B5fd0d8916890A27990924c" # Zoro USDT Token (zUSDT)
+    - "0xb52Ee74C79d2279aBa644ebcb4965381E6F5379a" # Zoro WBTC Token (zWBTC)
   graphUrl: "https://api.thegraph.com/subgraphs/name/zoro-protocol/testnet-zoro-degen"
