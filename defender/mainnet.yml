@@ -1,0 +1,14 @@
+name: Mainnet
+
+# Possible Defender networks: https://github.com/OpenZeppelin/defender-client/blob/master/packages/base/src/utils/network.ts
+monitored-network: zksync
+
+explorerUrl: "https://explorer.zksync.io/tx/"
+
+multicallAddress: "0xF9cda624FBC7e059355ce98a31693d299FACd963"
+
+core:
+  name: Core
+
+degen:
+  name: Degen
