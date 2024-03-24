@@ -5,7 +5,7 @@ frameworkVersion: "3"
 provider:
   name: defender
   stage: ${opt:stage, "testnet"}
-  stackName: liquidation
+  stackName: liquidation_${self:provider.stage}
   ssot: false
 
 custom:
