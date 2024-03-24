@@ -13,7 +13,7 @@ custom:
   stackSecrets: ${self:custom.config.secrets.${self:provider.stackName}}
 
   # Network specific config
-  network: ${file(${self:provider.stage}.yml)}
+  network: ${file(../${self:provider.stage}.yml)}
 
   defenderSecrets:
     # Public Variables
@@ -74,7 +74,7 @@ resources:
     monitor-1:
       name: ${self:custom.network.core.name} Monitor
       type: BLOCK
-      addresses: ${self:custom.network.core.monitored-addresses}
+      addresses: ${self:custom.network.core.zTokens}
       network: ${self:custom.network.monitored-network}
       abi: ${file(abis/sentinel-1.json.abi)}
       paused: false
@@ -95,7 +95,7 @@ resources:
     monitor-2:
       name: ${self:custom.network.degen.name} Monitor
       type: BLOCK
-      addresses: ${self:custom.network.degen.monitored-addresses}
+      addresses: ${self:custom.network.degen.zTokens}
       network: ${self:custom.network.monitored-network}
       abi: ${file(abis/sentinel-1.json.abi)}
       paused: false
