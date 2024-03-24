@@ -71,7 +71,7 @@ resources:
 
   relayers:
     relayer-1:
-      name: ${self:custom.network.name} Relay
+      name: ${self:custom.network.name} ${self:custom.name} Relay
       network: ${self:custom.network.monitored-network}
       min-balance: 100000000000000000
 

@@ -9,6 +9,7 @@ provider:
   ssot: false
 
 custom:
+  name: CToken
   config: ${file(../secrets.yml)}
   stackSecrets: ${self:custom.config.secrets.${self:provider.stackName}}
 
@@ -29,7 +30,7 @@ defender:
 resources:
   actions:
     action-1:
-      name: ${self:custom.network.core.name} Action
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Action
       path: autotask-1
       trigger:
         type: schedule
@@ -42,7 +43,7 @@ resources:
         explorerUrl: ${self:custom.network.explorerUrl}
 
     action-2:
-      name: ${self:custom.network.degen.name} Action
+      name: ${self:custom.network.name} ${self:custom.network.degen.name} ${self:custom.name} Action
       path: autotask-1
       trigger:
         type: schedule
@@ -66,13 +67,13 @@ resources:
 
   relayers:
     relayer-1:
-      name: ${self:custom.network.name} Relay
+      name: ${self:custom.network.name} ${self:custom.name} Relay
       network: ${self:custom.network.monitored-network}
       min-balance: 100000000000000000
 
   monitors:
     monitor-1:
-      name: ${self:custom.network.core.name} Monitor
+      name: ${self:custom.network.name} ${self:custom.network.core.name} ${self:custom.name} Monitor
       type: BLOCK
       addresses: ${self:custom.network.core.zTokens}
       network: ${self:custom.network.monitored-network}
@@ -93,7 +94,7 @@ resources:
         function: []
 
     monitor-2:
-      name: ${self:custom.network.degen.name} Monitor
+      name: ${self:custom.network.name} ${self:custom.network.degen.name} ${self:custom.name} Monitor
       type: BLOCK
       addresses: ${self:custom.network.degen.zTokens}
       network: ${self:custom.network.monitored-network}
