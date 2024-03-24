@@ -9,6 +9,29 @@ multicallAddress: "0xF9cda624FBC7e059355ce98a31693d299FACd963"
 
 core:
   name: Core
+  comptrollerAddress: "0x90f2810B85f02122159cB18f6abF2776a7Ca3152"
+  cEtherAddress: "0x3a6F5eA6b9B781C37F25164D9c25534eDd87d290"
+  zTokens:
+    - ${self:custom.network.core.cEtherAddress} # Zoro ETH Token (zETH)
+    - "0x49210d83c36B8C12Ba8827634A3F3aA103d75B39" # Zoro DAI Token (zDAI)
+    - "0x39de3D718f506F60A5f6958B54d777EB237Ed71b" # Zoro USDC Token (zUSDC)
+    - "0xBbc5604BF230084891729F24BCf130beBdd3086B" # Zoro USDT Token (zUSDT)
+    - "0x804CE355B2A02c5535c6A1Dc0B83F6545fee064D" # Zoro WBTC Token (zWBTC)
+  graphUrl: "https://api.studio.thegraph.com/query/50256/zoro-core/version/latest"
 
 degen:
   name: Degen
+  comptrollerAddress: "0x410ffcC8f37dCb3116cA8F59B30CCbe4c60F2385"
+  cEtherAddress: "0x2ff7bF02a7C4f63fBc3b764A12c723B2abdA2905"
+  zTokens:
+    - ${self:custom.network.degen.cEtherAddress} # Zoro ETH Token (zETH)
+    - "0xa25E963BfE7f4a7D6a1ecD71330872524735a521" # Zoro AAVE Token (zAAVE)
+    - "0x1454003428322ff08110b41c665B1A9FFA42D3Eb" # Zoro DAI Token (zDAI)
+    - "0x86A242EAB3A3DA017921987faa5271e9041BE97e" # Zoro LINK Token (zLINK)
+    - "0x4C604FDA8E5f7Dd2b61C0674308E59B559C417d2" # Zoro PEPE Token (zPEPE)
+    - "0x7Bb36CA2FccC09eb1cd99509a485C57679eC9Fb6" # Zoro SOL Token (zSOL)
+    - "0xC3F6019698E8d61046ad7F8222697adA3F26db69" # Zoro UNI Token (zUNI)
+    - "0x2404588c4B76e0733fa3Ab4FFfFB4fb20849a01B" # Zoro USDC Token (zUSDC)
+    - "0xE1c94b45F5d90a06676e176Abb53d7E76Ff7CA18" # Zoro USDT Token (zUSDT)
+    - "0x14FbeF18b54d7a398F09260c1954A7eA85bEBafe" # Zoro WBTC Token (zWBTC)
+  graphUrl: "https://api.studio.thegraph.com/query/50256/zoro-degen/v0.0.1"
